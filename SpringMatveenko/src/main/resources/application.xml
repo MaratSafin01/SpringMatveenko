@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <context:property-placeholder location="application.properties"/>
+    <context:annotation-config/>
+
+    <bean class="bpp.InjectBeanPostProcessor"/>
+    <bean class="bpp.TransactionBeanPostProcessor"/>
+
+    <bean id="driver" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${db.driver}"/>
+    </bean>
+
+    <bean id = "pool1" name = "p1,p2,p3" class = "database.pool.ConnectionPool">
+        <constructor-arg index="0" value = "${db.driver}"/>
+        <constructor-arg index="1"  value = "${db.pool.size}"/>
+        <constructor-arg index="2">
+            <list>
+                <value>--arg1=value1</value>
+                <value>--arg2=value2</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="3">
+            <null/>
+        </constructor-arg>
+        <property name="properties">
+            <map>
+                <entry key="url" value="${db.url}"/>
+                <entry key="driver" value="#{driver.substring(3)}"/>
+                <entry key="password" value="${db.password}"/>
+                <entry key="test" value="#{driver.length() > 10}"/>
+                <entry key="test1" value="#{driver.length() > T(Math).random() * 10}"/>
+
+            </map>
+        </property>
+    </bean>
+
+    <bean id="companyRepository" class="repo.CompanyRepository"/>
+
+
+</beans>
